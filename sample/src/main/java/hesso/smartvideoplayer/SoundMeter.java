@@ -1,4 +1,4 @@
-package com.afollestad.easyvideoplayersample;
+package hesso.smartvideoplayer;
 
 /**
  * Created by flavio on 07.04.17.

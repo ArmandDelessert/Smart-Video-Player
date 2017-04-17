@@ -1,4 +1,4 @@
-package com.afollestad.easyvideoplayersample;
+package hesso.smartvideoplayer;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

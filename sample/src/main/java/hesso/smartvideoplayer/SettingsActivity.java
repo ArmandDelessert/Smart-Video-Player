@@ -1,4 +1,4 @@
-package com.afollestad.easyvideoplayersample;
+package hesso.smartvideoplayer;
 
 
 import android.annotation.TargetApi;
@@ -11,6 +11,8 @@ import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+
+import com.afollestad.easyvideoplayersample.R;
 
 import java.util.List;
 
