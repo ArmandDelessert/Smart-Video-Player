@@ -1,4 +1,4 @@
-package com.afollestad.easyvideoplayersample;
+package hesso.smartvideoplayer;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
+import com.afollestad.easyvideoplayersample.R;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 public class MainActivity extends AppCompatActivity implements EasyVideoCallback {
@@ -17,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity_layout);
 
         player = (EasyVideoPlayer) findViewById(R.id.player);
         assert player != null;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     @Override
     protected void onPause() {
         super.onPause();
-        player.pause();
+//        player.pause();
     }
 
     @Override
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     @Override
     public void onCompletion(EasyVideoPlayer player) {
         Log.d("EVP-Sample", "onCompletion()");
+        Toast.makeText(this, "onCompletion", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -82,6 +84,5 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     @Override
     public void onClickVideoFrame(EasyVideoPlayer player) {
         Toast.makeText(this, "Click video frame.", Toast.LENGTH_SHORT).show();
-
     }
 }
