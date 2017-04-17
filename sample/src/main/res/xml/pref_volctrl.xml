@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_volctrl_switch"
+        android:summary="@string/pref_volctrl_summary"
+        android:title="@string/pref_volctrl_title" />
+
+
+    <PreferenceCategory android:title="Debug / Advanced">
+
+
+        <EditTextPreference
+            android:defaultValue="5000"
+            android:key="pref_volctrl_sample_time"
+            android:inputType="number"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Sample time [ms]" />
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

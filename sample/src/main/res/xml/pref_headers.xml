@@ -1,0 +1,9 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header
+        android:fragment="com.afollestad.easyvideoplayersample.SettingsActivity$VolCtrlPreferenceFragment"
+        android:icon="@android:drawable/ic_lock_silent_mode_off"
+        android:title="@string/pref_header_vol_ctrl" />
+
+
+</preference-headers>
