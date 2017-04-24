@@ -6,7 +6,6 @@ package hesso.smartvideoplayer;
 
 import android.media.MediaRecorder;
 import android.os.Handler;
-import android.widget.Toast;
 
 
 import java.io.IOException;

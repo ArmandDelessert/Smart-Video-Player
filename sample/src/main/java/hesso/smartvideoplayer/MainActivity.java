@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     private int volCtrlSR = 10;
     private float maxVol=1.0f;
     private float minVol=0.1f;
+    private int volctrlDelay = 5000;
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
@@ -51,11 +53,12 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
                 break;
         }
         if (permissionToRecordAccepted ) {
-            soundMeter = new SoundMeter(1000); // MagicNumber : number of median samples
+            soundMeter = new SoundMeter(100); // MagicNumber : number of median samples
             if (volCtrlEn && !soundMeter.isRunning()) {
                 //Toast.makeText(this, "Starting volume control" , Toast.LENGTH_SHORT).show();
                 try {
                     soundMeter.start();
+                    handler.postDelayed(r, volctrlDelay);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -127,20 +130,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
     @Override
     public void onRetry(EasyVideoPlayer player, Uri source) {
-        if (soundMeter!=null && soundMeter.isRunning()) {
-            float medVal = soundMeter.getMed();
-            float newVol = 0.5f+0.5f*(float)Math.log10(medVal/soundMeter.getFirstMed());
-            if (medVal!=0 && soundMeter.getFirstMed()!=0) {
-                if (newVol > maxVol)
-                    newVol = maxVol;
-                if (newVol < minVol)
-                    newVol = minVol;
-                player.setVolume(newVol, newVol);
-            }
-            Toast.makeText(this, "vol=" + String.valueOf(newVol) + " ; " +
-                    "med=" + String.valueOf(medVal) + " ; " +
-                    "fmed=" + String.valueOf(soundMeter.getFirstMed()), Toast.LENGTH_LONG).show();
-        }
+
     }
 
     @Override
@@ -172,4 +162,26 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         //Toast.makeText(this, ""+volCtrlSR , Toast.LENGTH_SHORT).show();
     }
 
+
+    Handler handler = new Handler();
+    final Runnable r = new Runnable() {
+        public void run() {
+            if (soundMeter!=null && soundMeter.isRunning()) {
+                float medVal = soundMeter.getMed();
+                float newVol = 0.5f+0.5f*(float)Math.log10(medVal/soundMeter.getFirstMed());
+                if (medVal!=0 && soundMeter.getFirstMed()!=0) {
+                    if (newVol > maxVol)
+                        newVol = maxVol;
+                    if (newVol < minVol)
+                        newVol = minVol;
+                    player.setVolume(newVol, newVol);
+                }
+                Toast.makeText(getApplicationContext(), "vol=" + String.valueOf(newVol) + " ; " +
+                        "med=" + String.valueOf(medVal) + " ; " +
+                        "fmed=" + String.valueOf(soundMeter.getFirstMed()), Toast.LENGTH_LONG).show();
+            }
+            if (volCtrlEn)
+                handler.postDelayed(this, volctrlDelay);
+        }
+    };
 }
