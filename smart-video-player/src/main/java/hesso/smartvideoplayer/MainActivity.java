@@ -33,12 +33,15 @@ faire tache background ? ou juste handler...
 public class MainActivity extends AppCompatActivity implements EasyVideoCallback {
 
     private EasyVideoPlayer player;
+
+    // Volume control (default values at first start app) :
     private SoundMeter soundMeter = null;
     private boolean volCtrlEn = false;
     private int volCtrlSR = 10;
     private float maxVol=1.0f;
     private float minVol=0.1f;
     private int volctrlDelay = 5000;
+    private int sensitivity = 12345; //TODO
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
@@ -162,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         //Toast.makeText(this, ""+volCtrlSR , Toast.LENGTH_SHORT).show();
     }
 
-
+    /*
+        Control volume timer
+     */
     Handler handler = new Handler();
     final Runnable r = new Runnable() {
         public void run() {
