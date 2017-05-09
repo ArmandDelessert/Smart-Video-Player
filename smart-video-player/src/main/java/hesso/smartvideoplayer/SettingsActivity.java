@@ -39,11 +39,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             if (preference.getKey().equals("pref_volctrl_sample_time")) {
                 preference.setSummary(stringValue + " ms");
+            } else if (preference.getKey().equals("pref_volctrl_nb_samples")) {
+                preference.setSummary(stringValue + " samples");
             }
             else {
                 preference.setSummary(stringValue);
             }
-            //Toast.makeText(preference.getContext().getApplicationContext(), preference.getKey() + " : " + stringValue , Toast.LENGTH_SHORT).show();
             return true;
         }
     };
@@ -119,6 +120,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("pref_volctrl_sample_time"));
+            bindPreferenceSummaryToValue(findPreference("pref_volctrl_nb_samples"));
         }
 
         @Override

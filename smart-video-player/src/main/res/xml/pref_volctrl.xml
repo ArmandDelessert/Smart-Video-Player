@@ -9,9 +9,16 @@
 
     <PreferenceCategory android:title="Debug / Advanced">
 
+        <EditTextPreference
+            android:defaultValue="100"
+            android:key="pref_volctrl_nb_samples"
+            android:inputType="number"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Number of samples" />
 
         <EditTextPreference
-            android:defaultValue="5000"
+            android:defaultValue="10"
             android:key="pref_volctrl_sample_time"
             android:inputType="number"
             android:selectAllOnFocus="true"

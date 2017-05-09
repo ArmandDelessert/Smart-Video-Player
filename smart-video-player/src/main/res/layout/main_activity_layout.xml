@@ -19,4 +19,11 @@
 
     app:evp_rightAction="submit"
     app:evp_source="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-    app:evp_submitText="@string/evp_submit" />
+    app:evp_submitText="@string/evp_submit" >
+
+    <TextureView
+        android:id="@+id/textureView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foregroundTint="@color/primary"/>
+</com.afollestad.easyvideoplayer.EasyVideoPlayer>
