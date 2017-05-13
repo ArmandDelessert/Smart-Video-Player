@@ -1,16 +1,13 @@
 package hesso.smartvideoplayer;//package hesso.smartvideoplayer;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
-
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
-
 import java.io.IOException;
 import java.util.Arrays;
-
 
 /**
  * Created by flavio on 08.05.17.
@@ -22,71 +19,63 @@ public class VolumeControl extends AsyncTask<Integer, Float, Void> {
     private MediaRecorder mRecorder = null;
     private EasyVideoPlayer mPlayer;
     private Context mContext;
-    private ProgressDialog dialog;
 
-    // TODO :
     private float maxVol=1.0f;
     private float minVol=0.1f;
-    private int volctrlDelay = 5000;
-    private int sensitivity = 12345;
 
-    public VolumeControl(Context context,EasyVideoPlayer player) {
+    public VolumeControl(Context context,EasyVideoPlayer player, MediaRecorder recorder) {
         mContext = context;
-        dialog = new ProgressDialog(mContext);
         mPlayer = player;
-    }
-
-    private void startRecorder() {
-        if (mRecorder == null) {
-            mRecorder = new MediaRecorder();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mRecorder.setOutputFile("/dev/null");
-            try {
-                mRecorder.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mRecorder.start();
-        }
+        mRecorder = recorder;
     }
 
     @Override
     protected Void doInBackground(Integer... params) {
+        Log.i("FCCVolCtrl","Background task started");
 
-        //float firstMed;
-        //int nbSamples=params[1];
-        //int samplesTime=params[0];
+        float firstMed=0, medVal=0;
+        int nbSamples=params[1];
+        int samplesTime=params[0];
 
-        //startRecorder(); // TODO reprendre ici ...
+        Log.i("FCCVolCtrl","nbSamples="+nbSamples+" ; samplesTime="+samplesTime);
 
-        // First run
-        //firstMed = getMed(samplesTime,nbSamples); // blocking function
-
-        while (true) {
-            //for (int i = 0; i < 2 ; i++) {
-            //    publishProgress(getMed(samplesTime,nbSamples));
-            try {
-                Thread.sleep(5000L);
-                publishProgress(0.0F);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        // Get first median value
+        try {
+            firstMed = getMed(samplesTime,nbSamples); // blocking function
+        } catch (InterruptedException e) {
+            return null;
         }
+
+        Log.i("FCCVolCtrl","firstMed="+firstMed);
+
+        while (!isCancelled()) {
+            try {
+                medVal = getMed(samplesTime, nbSamples); // blocking function
+            } catch (InterruptedException e) {
+                return null;
+            }
+            if (medVal!=0)
+                publishProgress(firstMed, medVal);
+        }
+        return null;
     }
 
     // get median value - blocking function
-    public float getMed(int sampleDelay, int nbSamples) {
+    public float getMed(int sampleDelay, int nbSamples) throws InterruptedException {
         float amp[] = new float[nbSamples];
-        for (int currMeas=0;currMeas<nbSamples;currMeas++)
-        {
-            amp[currMeas++] = (float) getAmplitude();
-            try {
-                Thread.sleep(sampleDelay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        for (int currMeas=0;currMeas<nbSamples;currMeas++) {
+
+            // get microphone maximum value from last call
+            amp[currMeas] = (float) getAmplitude();
+
+            // some times "getAmplitude" give 0 error values
+            // so we wait to have a valid value
+            while (amp[currMeas] == 0){
+                Thread.sleep(1);
+                amp[currMeas] = (float) getAmplitude();
             }
+
+            Thread.sleep(sampleDelay);
         }
         Arrays.sort(amp);
         return amp[amp.length/2];
@@ -94,58 +83,54 @@ public class VolumeControl extends AsyncTask<Integer, Float, Void> {
 
 
     // get microphone maximum value from last call
-    private double getAmplitude() {
+    private double getAmplitude() throws InterruptedException {
         if (mRecorder != null)
             return  mRecorder.getMaxAmplitude();
         else
-            return 0;
+            throw new InterruptedException();
     }
-
 
 
     @Override
     protected void onCancelled() {
+        Log.i("FCCVolCtrl","Volume control stopped");
+        mPlayer.setVolume(1.0F, 1.0F);
+        //mRecorder.stop();
         Toast.makeText(mContext, "Volume control stopped", Toast.LENGTH_SHORT).show();
     }
 
-
-
-
-    /*for (Long i = 0L; i < 3L; i++) {
-        Thread.sleep(5000);
-        publishProgress((Long) i);
+    @Override
+    protected void onPostExecute (Void result){
+        Log.i("FCCVolCtrl","onPostExecute() ERROR !!");
+        mPlayer.setVolume(1.0F, 1.0F);
+        //mRecorder.stop();
+        Toast.makeText(mContext, "Volume control stopped due an unknown error", Toast.LENGTH_SHORT).show();
     }
-
-    if (soundMeter!=null && soundMeter.isRunning()) {
-        float medVal = soundMeter.getMed();
-        float newVol = 0.5f+0.5f*(float)Math.log10(medVal/soundMeter.getFirstMed());
-        if (medVal!=0 && soundMeter.getFirstMed()!=0) {
-            if (newVol > maxVol)
-                newVol = maxVol;
-            if (newVol < minVol)
-                newVol = minVol;
-            player.setVolume(newVol, newVol);
-        }
-        Toast.makeText(getApplicationContext(), "vol=" + String.valueOf(newVol) + " ; " +
-                "med=" + String.valueOf(medVal) + " ; " +
-                "fmed=" + String.valueOf(soundMeter.getFirstMed()), Toast.LENGTH_LONG).show();
-    }
-    if (volCtrlEn)
-        handler.postDelayed(this, volctrlDelay);
-
-    */
 
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        Log.i("FCCVolCtrl","Volume control started");
         Toast.makeText(mContext, "Volume control started", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onProgressUpdate(Float... values) {
         super.onProgressUpdate(values);
-        Toast.makeText(mContext, "volume : "+values[0], Toast.LENGTH_SHORT).show();
+        float firstMed = values[0];
+        float medVal = values[1];
+        float newVol = 0.5f+0.5f*(float)Math.log10(medVal/firstMed);
+        if (newVol > maxVol)
+            newVol = maxVol;
+        if (newVol < minVol)
+            newVol = minVol;
+        mPlayer.setVolume(newVol, newVol);
+        Log.i("FCCVolCtrl","Updated"+
+                " vol="+String.valueOf(newVol) +
+                " (med="+String.valueOf(medVal)+")"+
+                "");
+
     }
 
 }

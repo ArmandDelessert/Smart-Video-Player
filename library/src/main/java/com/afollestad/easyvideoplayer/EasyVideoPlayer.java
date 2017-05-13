@@ -703,7 +703,7 @@ public class EasyVideoPlayer extends FrameLayout implements IUserMethods, Textur
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-        LOG("Buffering: %d%%", percent);
+        //LOG("Buffering: %d%%", percent);
         if (mCallback != null)
             mCallback.onBuffering(percent);
         if (mSeeker != null) {
