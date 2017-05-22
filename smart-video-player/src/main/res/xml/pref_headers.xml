@@ -5,5 +5,10 @@
         android:icon="@android:drawable/ic_lock_silent_mode_off"
         android:title="@string/pref_header_vol_ctrl" />
 
+    <header
+        android:fragment="hesso.smartvideoplayer.SettingsActivity$BlueFilterPreferenceFragment"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/pref_header_blue_filter" />
+
 
 </preference-headers>

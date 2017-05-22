@@ -1,12 +1,12 @@
 package hesso.smartvideoplayer;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +16,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.TextureView;
+import android.view.View;
+import android.widget.Toast;
+
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.afollestad.easyvideoplayersample.R;
@@ -39,22 +41,32 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     private MediaRecorder recorder = null;
     public int startingApp = 0;
 
+    // Shared preferences
+    SharedPreferences SP;
+
     // Volume control (default values at first start app) :
     private VolumeControl volCtrl = null;
     public boolean volCtrlEn = false;
     private int volCtrlSR = 10;
     private int volCtrlNbSamples = 100;
 
+    // Blue filter
+    private View filterView = null;
+    private boolean blueFilterEn = false;
+    private long blueFilterColor = 0x20FFFF00;
+
+
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
         if (permissionToRecordAccepted) {
@@ -66,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
             try {
                 recorder.prepare();
             } catch (IOException e) {
-                Log.i("FCCMainActivity" , "recorder.prepare() FAIL !");
+                Log.i("FCCMainActivity", "recorder.prepare() FAIL !");
                 e.printStackTrace();
             }
             recorder.start(); // Always active !
@@ -74,8 +86,9 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
             // if permission to record accepted and vol ctrl enable
             // create volume control instance and start execute
-            if (volCtrlEn) {
-                volCtrl = new VolumeControl(MainActivity.this,player,recorder);
+            AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE); // test also if the headphones are connected
+            if (volCtrlEn && am.isWiredHeadsetOn()) {
+                volCtrl = new VolumeControl(MainActivity.this, player, recorder);
                 volCtrl.execute(volCtrlSR, volCtrlNbSamples);
             }
         }
@@ -84,7 +97,10 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("FCCMainActivity" , "#######################\nStarting app");
+        Log.i("FCCMainActivity", "#######################\nStarting app");
+
+        // Shared preferences
+        SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         setContentView(R.layout.main_activity_layout);
 
@@ -95,11 +111,10 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        TextureView v = (TextureView) findViewById(R.id.textureView);
-        v.setOpaque(false);
-        //v.setBackgroundColor(0xFF00FF00); // TODO
-
+        filterView = findViewById(R.id.filter_view);
+        filterView.setVisibility(View.INVISIBLE);
     }
+
 
     @Override
     protected void onPause() {
@@ -166,13 +181,27 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         super.onResume();
         Log.i("FCCMainActivity" , "onResume() 0");
 
-        // Get shared preferences
-        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
-        // On resume volume control :
+        // On resume volume control, get shared preferences
         volCtrlEn = SP.getBoolean("pref_volctrl_switch", volCtrlEn);
+        if (!am.isWiredHeadsetOn() && volCtrlEn) {
+            editVolCtrlEn(false);// If headphones unplugged disable volume control
+            // Inform user that volume control is disabled
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Headphones unplugged : volume control not started")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
         int newVolCtrlSR = Integer.parseInt(SP.getString("pref_volctrl_sample_time", String.valueOf(volCtrlSR)));
         int newVolCtrlNbSamples = Integer.parseInt(SP.getString("pref_volctrl_nb_samples", String.valueOf(volCtrlNbSamples)));
+
 
         if (!permissionToRecordAccepted && volCtrlEn) {
             Log.i("FCCMainActivity" , "onResume() 1.1");
@@ -183,10 +212,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
                 Log.i("FCCMainActivity" , "onResume() 1.2");
                 // first 2 onResume() are at app startup, we want to skip this startup
 
-                volCtrlEn = false;
-                SharedPreferences.Editor editor = SP.edit();
-                editor.putBoolean("pref_volctrl_switch", volCtrlEn);
-                editor.commit();
+                editVolCtrlEn(false);
 
                 Log.i("FCCMainActivity" , "onResume() 1.3");
 
@@ -206,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
         } else if (volCtrlEn && volCtrl==null) {
             Log.i("FCCMainActivity" , "onResume() 2.1");
-            volCtrl = new VolumeControl(MainActivity.this, player,recorder);
+            volCtrl = new VolumeControl(this, player,recorder);
             Log.i("FCCMainActivity" , "onResume() 2.2");
             volCtrl.execute(newVolCtrlSR, newVolCtrlNbSamples); // start volume control
         } else if (!volCtrlEn && volCtrl!=null) {
@@ -217,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
             Log.i("FCCMainActivity" , "onResume() 4");
             // restart volume control if preferences changed
             volCtrl.cancel(true);
-            volCtrl = new VolumeControl(MainActivity.this, player,recorder);
+            volCtrl = new VolumeControl(this,player,recorder);
             volCtrl.execute(newVolCtrlSR, newVolCtrlNbSamples);
             Log.i("FCCVolCtrl" , "param changed : "+newVolCtrlSR+" "+newVolCtrlNbSamples);
         }
@@ -227,33 +253,30 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         // update values
         volCtrlSR=newVolCtrlSR;
         volCtrlNbSamples=newVolCtrlNbSamples;
+
+        // onResume blue filter, get shared preferences
+        blueFilterEn =  SP.getBoolean("pref_bluefilter_switch", blueFilterEn);
+        blueFilterColor =  Long.parseLong(SP.getString("pref_bluefilter_color", Long.toHexString(blueFilterColor)), 16);
+        Log.i("FCCMainActivity" , "blue filter color : "+Long.toHexString(blueFilterColor));
+        if (blueFilterEn) {
+            Log.i("FCCMainActivity" , "onResume() 6");
+            filterView.setVisibility(View.VISIBLE);
+            filterView.setBackgroundColor((int)blueFilterColor);
+        }
+        else {
+            Log.i("FCCMainActivity" , "onResume() 7");
+            filterView.setVisibility(View.INVISIBLE);
+        }
+
         if (startingApp<=1)
             startingApp++;
         Log.i("FCCMainActivity" , "onResume() end");
     }
 
-    /*
-        Control volume timer
+    public void editVolCtrlEn(Boolean newVal) {
+        SharedPreferences.Editor editor = SP.edit();
+        editor.putBoolean("pref_volctrl_switch",newVal);
+        editor.commit();
+    }
 
-    Handler handler = new Handler();
-    final Runnable r = new Runnable() {
-        public void run() {
-            if (soundMeter!=null && soundMeter.isRunning()) {
-                float medVal = soundMeter.getMed();
-                float newVol = 0.5f+0.5f*(float)Math.log10(medVal/soundMeter.getFirstMed());
-                if (medVal!=0 && soundMeter.getFirstMed()!=0) {
-                    if (newVol > maxVol)
-                        newVol = maxVol;
-                    if (newVol < minVol)
-                        newVol = minVol;
-                    player.setVolume(newVol, newVol);
-                }
-                Toast.makeText(getApplicationContext(), "vol=" + String.valueOf(newVol) + " ; " +
-                        "med=" + String.valueOf(medVal) + " ; " +
-                        "fmed=" + String.valueOf(soundMeter.getFirstMed()), Toast.LENGTH_LONG).show();
-            }
-            if (volCtrlEn)
-                handler.postDelayed(this, volctrlDelay);
-        }
-    };*/
 }

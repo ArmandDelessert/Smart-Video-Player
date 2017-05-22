@@ -1,12 +1,13 @@
 package hesso.smartvideoplayer;//package hesso.smartvideoplayer;
 
+import android.app.Activity;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -14,26 +15,34 @@ import java.util.Arrays;
  */
 
 
-public class VolumeControl extends AsyncTask<Integer, Float, Void> {
+public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
 
     private MediaRecorder mRecorder = null;
     private EasyVideoPlayer mPlayer;
-    private Context mContext;
+    private Activity mContext;
 
     private float maxVol=1.0f;
     private float minVol=0.1f;
 
-    public VolumeControl(Context context,EasyVideoPlayer player, MediaRecorder recorder) {
+    public static final int HEADPHONES_UNPLUGGED = 0;
+    public static final int CRASH = 1;
+    public static final int CANCELLED = 2;
+
+    public VolumeControl(Activity context, EasyVideoPlayer player, MediaRecorder recorder) {
         mContext = context;
         mPlayer = player;
         mRecorder = recorder;
     }
 
     @Override
-    protected Void doInBackground(Integer... params) {
+    protected Integer doInBackground(Integer... params) {
         Log.i("FCCVolCtrl","Background task started");
 
-        float firstMed=0, medVal=0;
+        AudioManager am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
+        if (!am.isWiredHeadsetOn())
+            return HEADPHONES_UNPLUGGED;
+
+        float firstMed, medVal;
         int nbSamples=params[1];
         int samplesTime=params[0];
 
@@ -43,21 +52,24 @@ public class VolumeControl extends AsyncTask<Integer, Float, Void> {
         try {
             firstMed = getMed(samplesTime,nbSamples); // blocking function
         } catch (InterruptedException e) {
-            return null;
+            return CRASH;
         }
 
         Log.i("FCCVolCtrl","firstMed="+firstMed);
 
-        while (!isCancelled()) {
+        while (!isCancelled() && am.isWiredHeadsetOn()) {
             try {
                 medVal = getMed(samplesTime, nbSamples); // blocking function
             } catch (InterruptedException e) {
-                return null;
+                return CRASH;
             }
             if (medVal!=0)
                 publishProgress(firstMed, medVal);
         }
-        return null;
+        if (!am.isWiredHeadsetOn())
+            return HEADPHONES_UNPLUGGED;
+        else
+            return CANCELLED;
     }
 
     // get median value - blocking function
@@ -95,16 +107,20 @@ public class VolumeControl extends AsyncTask<Integer, Float, Void> {
     protected void onCancelled() {
         Log.i("FCCVolCtrl","Volume control stopped");
         mPlayer.setVolume(1.0F, 1.0F);
-        //mRecorder.stop();
         Toast.makeText(mContext, "Volume control stopped", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    protected void onPostExecute (Void result){
-        Log.i("FCCVolCtrl","onPostExecute() ERROR !!");
+    protected void onPostExecute (Integer result){
         mPlayer.setVolume(1.0F, 1.0F);
-        //mRecorder.stop();
-        Toast.makeText(mContext, "Volume control stopped due an unknown error", Toast.LENGTH_SHORT).show();
+        if (result==HEADPHONES_UNPLUGGED)
+        {
+            ((MainActivity) mContext).editVolCtrlEn(false);
+            Toast.makeText(mContext, "Headphones unplugged : volume control stopped", Toast.LENGTH_SHORT).show();
+
+        }
+        else
+            Toast.makeText(mContext, "Volume control stopped", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -112,7 +128,9 @@ public class VolumeControl extends AsyncTask<Integer, Float, Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         Log.i("FCCVolCtrl","Volume control started");
-        Toast.makeText(mContext, "Volume control started", Toast.LENGTH_SHORT).show();
+        AudioManager am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
+        if (am.isWiredHeadsetOn())
+            Toast.makeText(mContext, "Volume control started", Toast.LENGTH_SHORT).show();
     }
 
     @Override

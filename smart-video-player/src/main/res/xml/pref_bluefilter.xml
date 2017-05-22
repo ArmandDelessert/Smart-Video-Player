@@ -1,0 +1,27 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_bluefilter_switch"
+        android:summary="@string/pref_bluefilter_summary"
+        android:title="@string/pref_bluefilter_title" />
+
+
+    <PreferenceCategory android:title="Debug / Advanced">
+
+        <EditTextPreference
+            android:defaultValue="20FFFF00"
+            android:key="pref_bluefilter_color"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
+            android:title="Filter color" />
+
+
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>

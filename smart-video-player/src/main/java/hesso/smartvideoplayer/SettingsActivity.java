@@ -41,6 +41,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 preference.setSummary(stringValue + " ms");
             } else if (preference.getKey().equals("pref_volctrl_nb_samples")) {
                 preference.setSummary(stringValue + " samples");
+            } else if (preference.getKey().equals("pref_bluefilter_color")) {
+                preference.setSummary("Actual color : #" + stringValue);
             }
             else {
                 preference.setSummary(stringValue);
@@ -103,7 +105,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || VolCtrlPreferenceFragment.class.getName().equals(fragmentName)
-                //|| Other...PreferenceFragment.class.getName().equals(fragmentName)
+                || BlueFilterPreferenceFragment.class.getName().equals(fragmentName)
         ;
     }
 
@@ -134,5 +136,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class BlueFilterPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_bluefilter);
+            setHasOptionsMenu(true);
+
+            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+            // to their values. When their values change, their summaries are
+            // updated to reflect the new value, per the Android Design
+            // guidelines.
+            bindPreferenceSummaryToValue(findPreference("pref_bluefilter_color"));
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
 }

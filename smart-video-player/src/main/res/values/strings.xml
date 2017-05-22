@@ -10,4 +10,7 @@
     <string name="pref_volctrl_summary">Auto adapt volume with noise</string>
     <string name="pref_volctrl_title">Smart volume control</string>
 
+    <string name="pref_header_blue_filter">Blue color filter</string>
+    <string name="pref_bluefilter_summary">Attenuates screen blue color</string>
+    <string name="pref_bluefilter_title">Blue color filter</string>
 </resources>
