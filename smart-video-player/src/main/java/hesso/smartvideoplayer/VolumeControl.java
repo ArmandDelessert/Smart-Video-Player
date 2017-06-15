@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
+import com.afollestad.easyvideoplayersample.R;
+
 import java.util.Arrays;
 
 /**
@@ -20,6 +22,7 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
     private MediaRecorder mRecorder = null;
     private EasyVideoPlayer mPlayer;
     private Activity mContext;
+    //private float sensi;
 
     private float maxVol=1.0f;
     private float minVol=0.1f;
@@ -28,10 +31,11 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
     public static final int CRASH = 1;
     public static final int CANCELLED = 2;
 
-    public VolumeControl(Activity context, EasyVideoPlayer player, MediaRecorder recorder) {
+    public VolumeControl(Activity context, EasyVideoPlayer player, MediaRecorder recorder/*, float _sensi*/) {
         mContext = context;
         mPlayer = player;
         mRecorder = recorder;
+        //sensi = _sensi;
     }
 
     @Override
@@ -107,7 +111,7 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
     protected void onCancelled() {
         Log.i("FCCVolCtrl","Volume control stopped");
         mPlayer.setVolume(1.0F, 1.0F);
-        Toast.makeText(mContext, "Volume control stopped", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -116,11 +120,11 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
         if (result==HEADPHONES_UNPLUGGED)
         {
             ((MainActivity) mContext).editVolCtrlEn(false);
-            Toast.makeText(mContext, "Headphones unplugged : volume control stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.hp_unplugged + R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
 
         }
         else
-            Toast.makeText(mContext, "Volume control stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -130,13 +134,13 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
         Log.i("FCCVolCtrl","Volume control started");
         AudioManager am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
         if (am.isWiredHeadsetOn())
-            Toast.makeText(mContext, "Volume control started", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.vol_ctrl_start, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onProgressUpdate(Float... values) {
         super.onProgressUpdate(values);
-        float firstMed = values[0];
+        float firstMed = values[0] ;//* sensi;
         float medVal = values[1];
         float newVol = 0.5f+0.5f*(float)Math.log10(medVal/firstMed);
         if (newVol > maxVol)
@@ -149,6 +153,8 @@ public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
                 " (med="+String.valueOf(medVal)+")"+
                 "");
 
+        // TODO : remove this after demo
+        Toast.makeText(mContext, "DemoMsg : Updated " + " vol="+String.valueOf(newVol) , Toast.LENGTH_SHORT).show();
     }
 
 }

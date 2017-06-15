@@ -27,13 +27,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.io.IOException;
 
 /*
-TODO : VolCtrl que activer si ecoueturs branchées (sinon c'est faussé par les hp du portable)
 
 TODO : pourquoi il faut redemarrer l'app pour que les valeurs dans les params prennent effet ? Truc bizare JAVA ?
 
 TODO : Voir pourquoi quand on quitte l'app en appuiant sur "retour" ca crache...
  */
-
 
 public class MainActivity extends AppCompatActivity implements EasyVideoCallback {
 
@@ -51,9 +49,8 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     private int volCtrlNbSamples = 100;
 
     // Blue filter
-    private View filterView = null;
-    private boolean blueFilterEn = false;
-    private long blueFilterColor = 0x20FFFF00;
+    private BlueFilter blueFilter;
+
 
 
     // Requesting permission to RECORD_AUDIO
@@ -111,8 +108,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        filterView = findViewById(R.id.filter_view);
-        filterView.setVisibility(View.INVISIBLE);
+        blueFilter = new BlueFilter(findViewById(R.id.filter_view));
     }
 
 
@@ -254,19 +250,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         volCtrlSR=newVolCtrlSR;
         volCtrlNbSamples=newVolCtrlNbSamples;
 
-        // onResume blue filter, get shared preferences
-        blueFilterEn =  SP.getBoolean("pref_bluefilter_switch", blueFilterEn);
-        blueFilterColor =  Long.parseLong(SP.getString("pref_bluefilter_color", Long.toHexString(blueFilterColor)), 16);
-        Log.i("FCCMainActivity" , "blue filter color : "+Long.toHexString(blueFilterColor));
-        if (blueFilterEn) {
-            Log.i("FCCMainActivity" , "onResume() 6");
-            filterView.setVisibility(View.VISIBLE);
-            filterView.setBackgroundColor((int)blueFilterColor);
-        }
-        else {
-            Log.i("FCCMainActivity" , "onResume() 7");
-            filterView.setVisibility(View.INVISIBLE);
-        }
+        blueFilter.updateState(SP);
 
         if (startingApp<=1)
             startingApp++;

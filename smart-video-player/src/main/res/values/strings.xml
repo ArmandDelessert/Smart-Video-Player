@@ -13,4 +13,7 @@
     <string name="pref_header_blue_filter">Blue color filter</string>
     <string name="pref_bluefilter_summary">Attenuates screen blue color</string>
     <string name="pref_bluefilter_title">Blue color filter</string>
+    <string name="vol_ctrl_start">Volume control started</string>
+    <string name="vol_ctrl_stop">Volume control stopped</string>
+    <string name="hp_unplugged">Headphones unplugged : </string>
 </resources>
