@@ -2,33 +2,22 @@ package hesso.smartvideoplayer;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.afollestad.easyvideoplayersample.R;
 import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.io.IOException;
-
-/*
-TODO : Voir pourquoi quand on quitte l'app en appuiant sur "retour" ca crache...
- */
 
 public class MainActivity extends AppCompatActivity implements EasyVideoCallback {
 
