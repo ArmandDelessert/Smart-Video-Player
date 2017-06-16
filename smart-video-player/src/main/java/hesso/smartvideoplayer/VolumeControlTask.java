@@ -74,6 +74,7 @@ public class VolumeControlTask extends AsyncTask<Integer, Float, Integer> {
             }
             if (medVal!=0)
                 publishProgress(firstMed, medVal);
+
         }
         if (!mAudioManager.isWiredHeadsetOn())
             return HEADPHONES_UNPLUGGED;
@@ -83,6 +84,7 @@ public class VolumeControlTask extends AsyncTask<Integer, Float, Integer> {
 
     // get median value - blocking function
     public float getMed(int sampleDelay, int nbSamples) throws InterruptedException {
+        int delay;
         float amp[] = new float[nbSamples];
         for (int currMeas=0;currMeas<nbSamples;currMeas++) {
 
@@ -91,12 +93,20 @@ public class VolumeControlTask extends AsyncTask<Integer, Float, Integer> {
 
             // some times "getAmplitude" give 0 error values
             // so we wait to have a valid value
+            delay = sampleDelay;
             while (amp[currMeas] == 0){
                 Thread.sleep(1);
                 amp[currMeas] = (float) getAmplitude();
+                if (delay>0)
+                    delay--;
+                else if (delay==0) {
+                    Log.e("FCCVolumeControlTask", "sampleDelay ("+sampleDelay+") too small");
+                    delay--;
+                }
             }
 
-            Thread.sleep(sampleDelay);
+            if (delay>0)
+                Thread.sleep(delay);
         }
         Arrays.sort(amp);
         return amp[amp.length/2];

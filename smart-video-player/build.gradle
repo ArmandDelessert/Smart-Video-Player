@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.afollestad.easyvideoplayersample"
-        minSdkVersion 14
+        minSdkVersion 24
         targetSdkVersion TARGET_SDK
         versionCode 15
         versionName PUBLISH_VERSION

@@ -19,4 +19,13 @@
     <string name="volctrl_rec_perm">Can\'t enable volume control ! Please accept record permission</string>
     <string name="volctrl_not_started">volume control not started</string>
     <string name="button_ok">OK</string>
+    <string name="nb_samples">Number of samples</string>
+    <string name="samples_time">Sample time [ms] (better if >=20ms)</string>
+    <string name="dbg_adv">Debug / Advanced</string>
+    <string name="bluefilter_disable_h">Disable at [hh:mm]</string>
+    <string name="bluefilter_enable_h">Enable at [hh:mm]</string>
+    <string name="bluefilter_color">Filter color</string>
+    <string name="bluefilter_actual">"Current color : #"</string>
+    <string name="volctrl_sample"> samples</string>
+
 </resources>

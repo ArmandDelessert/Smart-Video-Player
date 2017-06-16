@@ -7,23 +7,23 @@
         android:title="@string/pref_volctrl_title" />
 
 
-    <PreferenceCategory android:title="Debug / Advanced">
+    <PreferenceCategory android:title="@string/dbg_adv">
 
         <EditTextPreference
-            android:defaultValue="100"
+            android:defaultValue="250"
             android:key="pref_volctrl_nb_samples"
             android:inputType="number"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Number of samples" />
+            android:title="@string/nb_samples" />
 
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="20"
             android:key="pref_volctrl_sample_time"
             android:inputType="number"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Sample time [ms]" />
+            android:title="@string/samples_time" />
 
 
     </PreferenceCategory>

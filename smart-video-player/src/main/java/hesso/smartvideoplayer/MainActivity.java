@@ -27,9 +27,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.io.IOException;
 
 /*
-
-TODO : pourquoi il faut redemarrer l'app pour que les valeurs dans les params prennent effet ? Truc bizare JAVA ?
-
 TODO : Voir pourquoi quand on quitte l'app en appuiant sur "retour" ca crache...
  */
 

@@ -6,8 +6,21 @@
         android:summary="@string/pref_bluefilter_summary"
         android:title="@string/pref_bluefilter_title" />
 
+    <EditTextPreference
+        android:defaultValue="08:00"
+        android:key="pref_bluefilter_disable"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/bluefilter_disable_h" />
 
-    <PreferenceCategory android:title="Debug / Advanced">
+    <EditTextPreference
+        android:defaultValue="20:00"
+        android:key="pref_bluefilter_enable"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/bluefilter_enable_h" />
+
+    <PreferenceCategory android:title="@string/dbg_adv">
 
         <EditTextPreference
             android:defaultValue="20FFFF00"
@@ -16,7 +29,7 @@
             android:singleLine="true"
             android:digits="0123456789ABCDEF"
             android:inputType="textCapCharacters"
-            android:title="Filter color" />
+            android:title="@string/bluefilter_color" />
 
 
 

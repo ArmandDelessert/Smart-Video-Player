@@ -39,10 +39,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             if (preference.getKey().equals("pref_volctrl_sample_time")) {
                 preference.setSummary(stringValue + " ms");
-            } else if (preference.getKey().equals("pref_volctrl_nb_samples")) {
-                preference.setSummary(stringValue + " samples");
             } else if (preference.getKey().equals("pref_bluefilter_color")) {
-                preference.setSummary("Actual color : #" + stringValue);
+                preference.setSummary("#" + stringValue);
             }
             else {
                 preference.setSummary(stringValue);
@@ -149,6 +147,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("pref_bluefilter_color"));
+            bindPreferenceSummaryToValue(findPreference("pref_bluefilter_disable"));
+            bindPreferenceSummaryToValue(findPreference("pref_bluefilter_enable"));
         }
 
         @Override

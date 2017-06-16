@@ -19,5 +19,13 @@
     <string name="volctrl_rec_perm">Impossible d\'activer le contrôle du volume ! Veuillez accepter les permissions d\'enrregistrement</string>
     <string name="volctrl_not_started">volume control not started</string>
     <string name="button_ok">OK</string>
+    <string name="nb_samples">Nombre d\'échantillons</string>
+    <string name="samples_time">Temps d\'échantillonage [ms] (meilleur si >=20ms)</string>
+    <string name="dbg_adv">Debug / Expert</string>
+    <string name="bluefilter_disable_h">Désactiver à [hh:mm]</string>
+    <string name="bluefilter_enable_h">Activer à [hh:mm]</string>
+    <string name="bluefilter_color">Couleur du filtre</string>
+    <string name="bluefilter_actual">Couleur actuelle : #</string>
+    <string name="volctrl_sample"> échantillons</string>
 
 </resources>

@@ -31,8 +31,8 @@ public class VolumeControl {
     private SharedPreferences SP;
 
     private boolean volCtrlEn = false;
-    private int volCtrlSR = 10;
-    private int volCtrlNbSamples = 100;
+    private int volCtrlSR = 20;
+    private int volCtrlNbSamples = 250;
 
     private static final int NO_RESPONSE = 0;
     private static final int ACCEPTED = 1;
