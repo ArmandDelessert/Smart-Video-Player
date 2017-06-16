@@ -137,7 +137,7 @@ public class VolumeControlTask extends AsyncTask<Integer, Float, Integer> {
         if (result==HEADPHONES_UNPLUGGED)
         {
             mParent.editVolCtrlEn(false);
-            Toast.makeText(mContext, R.string.hp_unplugged + R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.hp_unplugged, Toast.LENGTH_SHORT).show();
 
         }
         else

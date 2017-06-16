@@ -15,7 +15,7 @@
     <string name="pref_bluefilter_title">Blue color filter</string>
     <string name="vol_ctrl_start">Volume control started</string>
     <string name="vol_ctrl_stop">Volume control stopped</string>
-    <string name="hp_unplugged">Headphones unplugged : </string>
+    <string name="hp_unplugged">Headphones unplugged : Volume control stopped</string>
     <string name="volctrl_rec_perm">Can\'t enable volume control ! Please accept record permission</string>
     <string name="volctrl_not_started">volume control not started</string>
     <string name="button_ok">OK</string>

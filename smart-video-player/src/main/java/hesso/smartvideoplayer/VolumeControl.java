@@ -45,14 +45,6 @@ public class VolumeControl {
         mPlayer = player;
         mAudioManager = audioManager;
         SP = _SP;
-
-        try {
-            startRecorder();// Always active !
-            // If we stop and start again it will crash the app ...
-        } catch (IOException e) {
-            Log.i("FCCVolumeControl", "recorder.prepare() FAIL !");
-            e.printStackTrace();
-        }
     }
 
     private boolean isWiredHeadsetOn (){
@@ -60,8 +52,16 @@ public class VolumeControl {
     }
 
     public void setPermissionToRecord (boolean accepted){
-        if (accepted)
+        if (accepted){
             permissionToRecord = ACCEPTED;
+            try {
+                startRecorder();// Always active !
+                // If we stop and start again it will crash the app ...
+            } catch (IOException e) {
+                Log.i("FCCVolumeControl", "recorder.prepare() FAIL !");
+                e.printStackTrace();
+            }
+        }
         else
             permissionToRecord = REFUSED;
     }
@@ -94,22 +94,6 @@ public class VolumeControl {
             return; // exit
         }
 
-        if (!isWiredHeadsetOn()) {
-            editVolCtrlEn(false);// If headphones unplugged disable volume control
-            // Inform user that volume control is disabled
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage(R.string.hp_unplugged + R.string.volctrl_not_started)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //do things
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-
-            return; // exit
-        }
 
         if (permissionToRecord==REFUSED) {
             editVolCtrlEn(false);// disable vol control if permission to record not accepted
@@ -126,6 +110,22 @@ public class VolumeControl {
             AlertDialog alert = builder.create();
             alert.show();
 
+            return; // exit
+        }
+
+        if (!isWiredHeadsetOn()) {
+            editVolCtrlEn(false);// If headphones unplugged disable volume control
+            // Inform user that volume control is disabled
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage(R.string.hp_unplugged)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
             return; // exit
         }
 
@@ -149,6 +149,7 @@ public class VolumeControl {
         // update values
         volCtrlSR=newVolCtrlSR;
         volCtrlNbSamples=newVolCtrlNbSamples;
+
     }
 
     public void editVolCtrlEn(boolean newVal) {
@@ -156,6 +157,7 @@ public class VolumeControl {
         editor.putBoolean("pref_volctrl_switch",newVal);
         editor.commit();
         volCtrlEn = newVal;
+        updateState();
     }
 
 }
