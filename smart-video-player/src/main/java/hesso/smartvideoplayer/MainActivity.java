@@ -87,6 +87,14 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     }
 
     @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        startActivity(i);
+    }
+
+    @Override
     public void onStarted(EasyVideoPlayer player) {
     }
 
