@@ -30,6 +30,8 @@ public class SoundMeter {
         amp = new float[medSamples];
     }
 
+
+
     Handler handler = new Handler();
     final Runnable r = new Runnable() {
         public void run() {

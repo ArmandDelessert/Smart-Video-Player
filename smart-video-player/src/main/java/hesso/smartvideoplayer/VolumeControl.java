@@ -2,14 +2,18 @@ package hesso.smartvideoplayer;//package hesso.smartvideoplayer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.afollestad.easyvideoplayersample.R;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -17,144 +21,141 @@ import java.util.Arrays;
  */
 
 
-public class VolumeControl extends AsyncTask<Integer, Float, Integer> {
+public class VolumeControl {
 
-    private MediaRecorder mRecorder = null;
     private EasyVideoPlayer mPlayer;
     private Activity mContext;
-    //private float sensi;
+    private AudioManager mAudioManager;
+    private MediaRecorder recorder = null;
+    private VolumeControlTask volCtrlTask = null;
+    private SharedPreferences SP;
 
-    private float maxVol=1.0f;
-    private float minVol=0.1f;
+    private boolean volCtrlEn = false;
+    private int volCtrlSR = 10;
+    private int volCtrlNbSamples = 100;
 
-    public static final int HEADPHONES_UNPLUGGED = 0;
-    public static final int CRASH = 1;
-    public static final int CANCELLED = 2;
+    private static final int NO_RESPONSE = 0;
+    private static final int ACCEPTED = 1;
+    private static final int REFUSED = 2;
+    private int permissionToRecord = NO_RESPONSE;
 
-    public VolumeControl(Activity context, EasyVideoPlayer player, MediaRecorder recorder/*, float _sensi*/) {
+
+    public VolumeControl(Activity context, EasyVideoPlayer player, AudioManager audioManager, SharedPreferences _SP) {
         mContext = context;
         mPlayer = player;
-        mRecorder = recorder;
-        //sensi = _sensi;
-    }
+        mAudioManager = audioManager;
+        SP = _SP;
 
-    @Override
-    protected Integer doInBackground(Integer... params) {
-        Log.i("FCCVolCtrl","Background task started");
-
-        AudioManager am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
-        if (!am.isWiredHeadsetOn())
-            return HEADPHONES_UNPLUGGED;
-
-        float firstMed, medVal;
-        int nbSamples=params[1];
-        int samplesTime=params[0];
-
-        Log.i("FCCVolCtrl","nbSamples="+nbSamples+" ; samplesTime="+samplesTime);
-
-        // Get first median value
         try {
-            firstMed = getMed(samplesTime,nbSamples); // blocking function
-        } catch (InterruptedException e) {
-            return CRASH;
+            startRecorder();// Always active !
+            // If we stop and start again it will crash the app ...
+        } catch (IOException e) {
+            Log.i("FCCVolumeControl", "recorder.prepare() FAIL !");
+            e.printStackTrace();
         }
+    }
 
-        Log.i("FCCVolCtrl","firstMed="+firstMed);
+    private boolean isWiredHeadsetOn (){
+        return mAudioManager.isWiredHeadsetOn();
+    }
 
-        while (!isCancelled() && am.isWiredHeadsetOn()) {
-            try {
-                medVal = getMed(samplesTime, nbSamples); // blocking function
-            } catch (InterruptedException e) {
-                return CRASH;
+    public void setPermissionToRecord (boolean accepted){
+        if (accepted)
+            permissionToRecord = ACCEPTED;
+        else
+            permissionToRecord = REFUSED;
+    }
+
+    private void startRecorder () throws IOException {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFile("/dev/null");
+        recorder.prepare(); // throws IOException
+        recorder.start();
+    }
+
+
+    void updateState () {
+
+        if (permissionToRecord==NO_RESPONSE)
+            return; // do nothing
+
+        // Get volCtrlEn shared preference
+        volCtrlEn = SP.getBoolean("pref_volctrl_switch", volCtrlEn);
+
+        if (!volCtrlEn) {
+            if (volCtrlTask!=null) {
+                Log.i("FCCVolumeControl", "Stop task");
+                volCtrlTask.cancel(true);
+                volCtrlTask = null;
             }
-            if (medVal!=0)
-                publishProgress(firstMed, medVal);
+            return; // exit
         }
-        if (!am.isWiredHeadsetOn())
-            return HEADPHONES_UNPLUGGED;
-        else
-            return CANCELLED;
-    }
 
-    // get median value - blocking function
-    public float getMed(int sampleDelay, int nbSamples) throws InterruptedException {
-        float amp[] = new float[nbSamples];
-        for (int currMeas=0;currMeas<nbSamples;currMeas++) {
+        if (!isWiredHeadsetOn()) {
+            editVolCtrlEn(false);// If headphones unplugged disable volume control
+            // Inform user that volume control is disabled
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage(R.string.hp_unplugged + R.string.volctrl_not_started)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
 
-            // get microphone maximum value from last call
-            amp[currMeas] = (float) getAmplitude();
-
-            // some times "getAmplitude" give 0 error values
-            // so we wait to have a valid value
-            while (amp[currMeas] == 0){
-                Thread.sleep(1);
-                amp[currMeas] = (float) getAmplitude();
-            }
-
-            Thread.sleep(sampleDelay);
+            return; // exit
         }
-        Arrays.sort(amp);
-        return amp[amp.length/2];
-    }
 
+        if (permissionToRecord==REFUSED) {
+            editVolCtrlEn(false);// disable vol control if permission to record not accepted
+            // Inform user that volume control is disabled
+            // TODO : maybe ask permission again ?
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage(R.string.volctrl_rec_perm)
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
 
-    // get microphone maximum value from last call
-    private double getAmplitude() throws InterruptedException {
-        if (mRecorder != null)
-            return  mRecorder.getMaxAmplitude();
-        else
-            throw new InterruptedException();
-    }
-
-
-    @Override
-    protected void onCancelled() {
-        Log.i("FCCVolCtrl","Volume control stopped");
-        mPlayer.setVolume(1.0F, 1.0F);
-        Toast.makeText(mContext, R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onPostExecute (Integer result){
-        mPlayer.setVolume(1.0F, 1.0F);
-        if (result==HEADPHONES_UNPLUGGED)
-        {
-            ((MainActivity) mContext).editVolCtrlEn(false);
-            Toast.makeText(mContext, R.string.hp_unplugged + R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
-
+            return; // exit
         }
-        else
-            Toast.makeText(mContext, R.string.vol_ctrl_stop, Toast.LENGTH_SHORT).show();
+
+        // Get others shared preferences
+        int newVolCtrlSR = Integer.parseInt(SP.getString("pref_volctrl_sample_time", String.valueOf(volCtrlSR)));
+        int newVolCtrlNbSamples = Integer.parseInt(SP.getString("pref_volctrl_nb_samples", String.valueOf(volCtrlNbSamples)));
+
+        if (volCtrlTask==null) {
+            Log.i("FCCVolumeControl" , "Create task");
+            volCtrlTask = new VolumeControlTask(mContext, this, mPlayer,recorder, mAudioManager);
+            volCtrlTask.execute(newVolCtrlSR, newVolCtrlNbSamples); // start volume control
+        } else if (newVolCtrlSR!=volCtrlSR || newVolCtrlNbSamples!=volCtrlNbSamples){
+            Log.i("FCCVolumeControl" , "Restart task");
+            // restart volume control if preferences changed
+            volCtrlTask.cancel(true);
+            volCtrlTask = new VolumeControlTask(mContext, this,mPlayer,recorder, mAudioManager);
+            volCtrlTask.execute(newVolCtrlSR, newVolCtrlNbSamples);
+            Log.i("FCCVolumeControl" , "param updated : "+newVolCtrlSR+" "+newVolCtrlNbSamples);
+        }
+
+        // update values
+        volCtrlSR=newVolCtrlSR;
+        volCtrlNbSamples=newVolCtrlNbSamples;
     }
 
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        Log.i("FCCVolCtrl","Volume control started");
-        AudioManager am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
-        if (am.isWiredHeadsetOn())
-            Toast.makeText(mContext, R.string.vol_ctrl_start, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onProgressUpdate(Float... values) {
-        super.onProgressUpdate(values);
-        float firstMed = values[0] ;//* sensi;
-        float medVal = values[1];
-        float newVol = 0.5f+0.5f*(float)Math.log10(medVal/firstMed);
-        if (newVol > maxVol)
-            newVol = maxVol;
-        if (newVol < minVol)
-            newVol = minVol;
-        mPlayer.setVolume(newVol, newVol);
-        Log.i("FCCVolCtrl","Updated"+
-                " vol="+String.valueOf(newVol) +
-                " (med="+String.valueOf(medVal)+")"+
-                "");
-
-        // TODO : remove this after demo
-        Toast.makeText(mContext, "DemoMsg : Updated " + " vol="+String.valueOf(newVol) , Toast.LENGTH_SHORT).show();
+    public void editVolCtrlEn(boolean newVal) {
+        SharedPreferences.Editor editor = SP.edit();
+        editor.putBoolean("pref_volctrl_switch",newVal);
+        editor.commit();
+        volCtrlEn = newVal;
     }
 
 }

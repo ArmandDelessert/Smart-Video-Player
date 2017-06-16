@@ -16,4 +16,8 @@
     <string name="vol_ctrl_start">Control du volume activer</string>
     <string name="vol_ctrl_stop">Control du volume arrêté</string>
     <string name="hp_unplugged">Ecouteurs décomectés : </string>
+    <string name="volctrl_rec_perm">Impossible d\'activer le contrôle du volume ! Veuillez accepter les permissions d\'enrregistrement</string>
+    <string name="volctrl_not_started">volume control not started</string>
+    <string name="button_ok">OK</string>
+
 </resources>
