@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
     @Override
     public void onRetry(EasyVideoPlayer player, Uri source) {
-        Toast.makeText(this, "Click Retry button.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Retry button clicked.", Toast.LENGTH_SHORT).show();
     }
 
     @Override

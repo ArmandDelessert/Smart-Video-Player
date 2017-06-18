@@ -1,6 +1,5 @@
 package hesso.smartvideoplayer;
 
-
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
@@ -103,8 +102,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || VolCtrlPreferenceFragment.class.getName().equals(fragmentName)
-                || BlueFilterPreferenceFragment.class.getName().equals(fragmentName)
-        ;
+                || BlueFilterPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

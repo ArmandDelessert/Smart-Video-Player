@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Smart Video Player</string>
     <string name="error">Error</string>
     <string name="title_activity_settings">Settings</string>
@@ -10,14 +11,16 @@
     <string name="pref_volctrl_summary">Auto adapt volume with noise</string>
     <string name="pref_volctrl_title">Smart volume control</string>
 
+    <!-- Blue color filter -->
     <string name="pref_header_blue_filter">Blue color filter</string>
     <string name="pref_bluefilter_summary">Attenuates screen blue color</string>
     <string name="pref_bluefilter_title">Blue color filter</string>
+
     <string name="vol_ctrl_start">Volume control started</string>
     <string name="vol_ctrl_stop">Volume control stopped</string>
-    <string name="hp_unplugged">Headphones unplugged : Volume control stopped</string>
-    <string name="volctrl_rec_perm">Can\'t enable volume control ! Please accept record permission</string>
-    <string name="volctrl_not_started">volume control not started</string>
+    <string name="hp_unplugged">Headphones unplugged: Volume control stopped</string>
+    <string name="volctrl_rec_perm">Can\'t enable volume control! Please accept record permission.</string>
+    <string name="volctrl_not_started">Volume control not started</string>
     <string name="button_ok">OK</string>
     <string name="nb_samples">Number of samples</string>
     <string name="samples_time">Sample time [ms] (better if >=20ms)</string>

@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Smart Video Player</string>
     <string name="error">Erreur</string>
     <string name="title_activity_settings">Options</string>
@@ -6,18 +7,20 @@
     <!-- Strings related to Settings -->
 
     <!-- Smart volume control -->
-    <string name="pref_header_vol_ctrl">Control du volume intélligent</string>
+    <string name="pref_header_vol_ctrl">Contrôle du volume intelligent</string>
     <string name="pref_volctrl_summary">Adapte le volume en fonction du bruit ambiant</string>
-    <string name="pref_volctrl_title">Control du volume intélligent</string>
+    <string name="pref_volctrl_title">Contrôle du volume intelligent</string>
 
-    <string name="pref_header_blue_filter">Filtre bleu</string>
-    <string name="pref_bluefilter_summary">Atténue la couleur bleu de l\'écran</string>
-    <string name="pref_bluefilter_title">Filtre bleu</string>
+    <!-- Blue color filter -->
+    <string name="pref_header_blue_filter">Filtre de lumière bleue</string>
+    <string name="pref_bluefilter_summary">Attenue la couleur bleue de l\'écran</string>
+    <string name="pref_bluefilter_title">Filtre de lumière bleue</string>
+
     <string name="vol_ctrl_start">Control du volume activé</string>
     <string name="vol_ctrl_stop">Control du volume arrêté</string>
     <string name="hp_unplugged">Ecouteurs déconnectés : Control du volume arrêté</string>
-    <string name="volctrl_rec_perm">Impossible d\'activer le contrôle du volume ! Veuillez accepter les permissions d\'enrregistrement</string>
-    <string name="volctrl_not_started">volume control not started</string>
+    <string name="volctrl_rec_perm">Impossible d\'activer le contrôle du volume ! Veuillez accepter les permissions d\'enrregistrement.</string>
+    <string name="volctrl_not_started">Volume control not started</string>
     <string name="button_ok">OK</string>
     <string name="nb_samples">Nombre d\'échantillons</string>
     <string name="samples_time">Temps d\'échantillonage [ms] (meilleur si >=20ms)</string>
