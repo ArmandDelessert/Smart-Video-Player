@@ -29,7 +29,11 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
     @Override
@@ -68,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         volCtrl = new VolumeControl(MainActivity.this, player, (AudioManager)getSystemService(Context.AUDIO_SERVICE), SP);
         blueFilter = new BlueFilter(findViewById(R.id.filter_view), SP);
     }
-
 
     @Override
     protected void onPause() {
@@ -123,7 +126,8 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
     @Override
     public void onRetry(EasyVideoPlayer player, Uri source) {
-
+        Intent intent = new Intent(this, VideoFileSelectionActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -147,7 +151,4 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
         Log.i("FCCMainActivity" , "onResume() end");
     }
-
-
-
 }

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/easy-video-player.iml" filepath="$PROJECT_DIR$/easy-video-player.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/smart-video-player/smart-video-player.iml" filepath="$PROJECT_DIR$/smart-video-player/smart-video-player.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smart-video-player/smart-video-player.iml" filepath="$PROJECT_DIR$/smart-video-player/smart-video-player.iml" />
     </modules>
   </component>
 </project>
