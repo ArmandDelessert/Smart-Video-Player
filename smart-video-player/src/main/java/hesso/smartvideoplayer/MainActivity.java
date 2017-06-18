@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
     @Override
     public void onRetry(EasyVideoPlayer player, Uri source) {
-
+        Toast.makeText(this, "Click Retry button.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -147,7 +148,4 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
 
         Log.i("FCCMainActivity" , "onResume() end");
     }
-
-
-
 }
