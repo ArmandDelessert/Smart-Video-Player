@@ -17,16 +17,15 @@ import com.afollestad.easyvideoplayersample.R;
 public class VideoFileSelectionActivity extends AppCompatActivity {
 
     private EasyVideoPlayer player;
-
-    public VideoFileSelectionActivity(EasyVideoPlayer player) {
-        this.player = player;
-    }
+    private VideoListManager videoListManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_file_selection_activity_layout);
 
+        // Récupération du VideoListManager passé en paramètre
+        videoListManager = (VideoListManager) getIntent().getSerializableExtra("VideoListManager");
         initVideoList();
     }
 
@@ -34,7 +33,7 @@ public class VideoFileSelectionActivity extends AppCompatActivity {
      * Initialisation de la liste des vidéos présentes sur l'appareil.
      */
     private void initVideoList() {
-        final VideoListManager videoListManager = new VideoListManager(this);
+//        final VideoListManager videoListManager = new VideoListManager(this);
 
         final ListView playListListView = (ListView) findViewById(R.id.playListListView);
         final VideoItemCustomRowAdapter videoItemCustomRowAdapter = new VideoItemCustomRowAdapter(this, videoListManager.getVideoItemsList());
@@ -43,7 +42,7 @@ public class VideoFileSelectionActivity extends AppCompatActivity {
         playListListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                player.setSource(Uri.parse(videoListManager.getVideoStringList().get(position)));
+                videoListManager.getPlayer().setSource(Uri.parse(videoListManager.getVideoStringList().get(position)));
             }
         });
     }

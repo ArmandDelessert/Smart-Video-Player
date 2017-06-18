@@ -22,6 +22,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 public class MainActivity extends AppCompatActivity implements EasyVideoCallback {
 
     private EasyVideoPlayer player;
+    private VideoListManager videoListManager;
 
     // Features
     private VolumeControl volCtrl = null;
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         assert player != null;
         player.setCallback(this);
         // All further configuration is done from the XML layout.
+
+        // Gestion de la liste des fichiers vidéo présents sur l'appareil
+        videoListManager = new VideoListManager(this, player);
 
         // Features
         volCtrl = new VolumeControl(MainActivity.this, player, (AudioManager)getSystemService(Context.AUDIO_SERVICE), SP);
@@ -124,12 +128,29 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
         //Log.d("EVP-Sample", "onCompletion()");
     }
 
+    /**
+     * Ouverture de la page des paramètres de l'applications.
+     *
+     * @param player
+     * @param source
+     */
     @Override
     public void onRetry(EasyVideoPlayer player, Uri source) {
+        // Première méthode
+//        videoListManager.openVideoListView();
+
+        // Deuxième méthode
         Intent intent = new Intent(this, VideoFileSelectionActivity.class);
+//        intent.putExtra("VideoListManager", videoListManager); // Passage du VideoListManager en paramètre
         startActivity(intent);
     }
 
+    /**
+     * Ouverture de la page du choix de la vidéo.
+     *
+     * @param player
+     * @param source
+     */
     @Override
     public void onSubmit(EasyVideoPlayer player, Uri source) {
         Intent intent = new Intent(this, SettingsActivity.class);
@@ -142,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements EasyVideoCallback
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Log.i("FCCMainActivity" , "onResume() start");
 
