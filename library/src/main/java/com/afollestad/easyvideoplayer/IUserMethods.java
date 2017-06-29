@@ -12,100 +12,100 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-/**
- * @author Aidan Follestad (afollestad)
- */
+/** @author Aidan Follestad (afollestad) */
 @SuppressWarnings("unused")
 interface IUserMethods {
 
-    void setSource(@NonNull Uri source);
+  void setSource(@NonNull Uri source);
 
-    void setCallback(@NonNull EasyVideoCallback callback);
+  void setCallback(@NonNull EasyVideoCallback callback);
 
-    void setProgressCallback(@NonNull EasyVideoProgressCallback callback);
+  void setProgressCallback(@NonNull EasyVideoProgressCallback callback);
 
-    void setLeftAction(@EasyVideoPlayer.LeftAction int action);
+  void setLeftAction(@EasyVideoPlayer.LeftAction int action);
 
-    void setRightAction(@EasyVideoPlayer.RightAction int action);
+  void setRightAction(@EasyVideoPlayer.RightAction int action);
 
-    void setCustomLabelText(@Nullable CharSequence text);
+  void setCustomLabelText(@Nullable CharSequence text);
 
-    void setCustomLabelTextRes(@StringRes int textRes);
+  void setCustomLabelTextRes(@StringRes int textRes);
 
-    void setBottomLabelText(@Nullable CharSequence text);
+  void setBottomLabelText(@Nullable CharSequence text);
 
-    void setBottomLabelTextRes(@StringRes int textRes);
+  void setBottomLabelTextRes(@StringRes int textRes);
 
-    void setRetryText(@Nullable CharSequence text);
+  void setRetryText(@Nullable CharSequence text);
 
-    void setRetryTextRes(@StringRes int res);
+  void setRetryTextRes(@StringRes int res);
 
-    void setSubmitText(@Nullable CharSequence text);
+  void setSubmitText(@Nullable CharSequence text);
 
-    void setSubmitTextRes(@StringRes int res);
+  void setSubmitTextRes(@StringRes int res);
 
-    void setRestartDrawable(@NonNull Drawable drawable);
+  void setRestartDrawable(@NonNull Drawable drawable);
 
-    void setRestartDrawableRes(@DrawableRes int res);
+  void setRestartDrawableRes(@DrawableRes int res);
 
-    void setPlayDrawable(@NonNull Drawable drawable);
+  void setPlayDrawable(@NonNull Drawable drawable);
 
-    void setPlayDrawableRes(@DrawableRes int res);
+  void setPlayDrawableRes(@DrawableRes int res);
 
-    void setPauseDrawable(@NonNull Drawable drawable);
+  void setPauseDrawable(@NonNull Drawable drawable);
 
-    void setPauseDrawableRes(@DrawableRes int res);
+  void setPauseDrawableRes(@DrawableRes int res);
 
-    void setThemeColor(@ColorInt int color);
+  void setThemeColor(@ColorInt int color);
 
-    void setThemeColorRes(@ColorRes int colorRes);
+  void setThemeColorRes(@ColorRes int colorRes);
 
-    void setHideControlsOnPlay(boolean hide);
+  void setHideControlsOnPlay(boolean hide);
 
-    void setAutoPlay(boolean autoPlay);
+  void setAutoPlay(boolean autoPlay);
 
-    void setInitialPosition(@IntRange(from = 0, to = Integer.MAX_VALUE) int pos);
+  void setInitialPosition(@IntRange(from = 0, to = Integer.MAX_VALUE) int pos);
 
-    void showControls();
+  void showControls();
 
-    void hideControls();
+  void hideControls();
 
-    @CheckResult
-    boolean isControlsShown();
+  @CheckResult
+  boolean isControlsShown();
 
-    void toggleControls();
+  void toggleControls();
 
-    void enableControls(boolean andShow);
+  void enableControls(boolean andShow);
 
-    void disableControls();
+  void disableControls();
 
-    @CheckResult
-    boolean isPrepared();
+  @CheckResult
+  boolean isPrepared();
 
-    @CheckResult
-    boolean isPlaying();
+  @CheckResult
+  boolean isPlaying();
 
-    @CheckResult
-    int getCurrentPosition();
+  @CheckResult
+  int getCurrentPosition();
 
-    @CheckResult
-    int getDuration();
+  @CheckResult
+  int getDuration();
 
-    void start();
+  void start();
 
-    void seekTo(@IntRange(from = 0, to = Integer.MAX_VALUE) int pos);
+  void seekTo(@IntRange(from = 0, to = Integer.MAX_VALUE) int pos);
 
-    void setVolume(@FloatRange(from = 0f, to = 1f) float leftVolume, @FloatRange(from = 0f, to = 1f) float rightVolume);
+  void setVolume(
+      @FloatRange(from = 0f, to = 1f) float leftVolume,
+      @FloatRange(from = 0f, to = 1f) float rightVolume);
 
-    void pause();
+  void pause();
 
-    void stop();
+  void stop();
 
-    void reset();
+  void reset();
 
-    void release();
+  void release();
 
-    void setAutoFullscreen(boolean autoFullScreen);
+  void setAutoFullscreen(boolean autoFullScreen);
 
-    void setLoop(boolean loop);
+  void setLoop(boolean loop);
 }

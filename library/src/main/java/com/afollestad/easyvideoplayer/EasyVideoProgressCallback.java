@@ -1,9 +1,7 @@
 package com.afollestad.easyvideoplayer;
 
-/**
- * @author Aidan Follestad (afollestad)
- */
+/** @author Aidan Follestad (afollestad) */
 public interface EasyVideoProgressCallback {
 
-    void onVideoProgressUpdate(int position, int duration);
+  void onVideoProgressUpdate(int position, int duration);
 }
