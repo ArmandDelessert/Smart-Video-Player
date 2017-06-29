@@ -1,3 +1,9 @@
+# Smart Video Player
+
+A smart video player for Android that adapts its brightness and volume to ambient brightness and ambient noise.
+
+This video player is based on the [Easy Video Player](https://github.com/afollestad/easy-video-player) from [afollestad](https://github.com/afollestad).
+
 ## Easy Video Player
 
 Easy Video Player is a simple but powerful view that you can plugin to your apps to quickly get
